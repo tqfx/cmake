@@ -1,0 +1,67 @@
+include(cmake/CMakeModulePath.cmake)
+set(CMAKE_POLICY_DEFAULT_CMP0048 NEW)
+set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
+cmake_minimum_required(VERSION 2.8.12)
+include(cmake/Languages.cmake)
+project(cmake ${LANGUAGES})
+include(cmake/Project.cmake)
+if(STATIC)
+  include(cmake/CMakeFindLibraryStatic.cmake)
+  include(cmake/TargetStatic.cmake)
+endif()
+find_package(ClangFormat)
+find_package(ClangTidy)
+find_package(LuaFormat)
+find_package(cppcheck)
+find_package(CCache)
+find_package(Talloc)
+find_package(StyLua)
+find_package(Python)
+find_package(Cython)
+find_package(Black)
+find_package(IWYU)
+find_package(LDoc)
+find_package(Java)
+find_package(JNI)
+find_package(Git)
+find_package(Zig)
+
+add_library(cmake OBJECT src/lib.c src/lib.h)
+add_library(cmakelib STATIC $<TARGET_OBJECTS:cmake>)
+add_library(libcmake SHARED $<TARGET_OBJECTS:cmake>)
+
+set_target_properties(cmake PROPERTIES
+  POSITION_INDEPENDENT_CODE 1
+  C_VISIBILITY_PRESET hidden
+  CXX_VISIBILITY_PRESET hidden
+)
+set_target_properties(cmakelib PROPERTIES OUTPUT_NAME cmake)
+set_target_properties(libcmake PROPERTIES OUTPUT_NAME cmake)
+
+if(CMAKE_STATIC_LIBRARY_SUFFIX STREQUAL .lib)
+  set_target_properties(libcmake PROPERTIES OUTPUT_NAME libcmake)
+endif()
+
+include(CTest)
+add_executable(main src/main.c)
+target_compile_definitions(main PUBLIC)
+target_link_libraries(main PRIVATE cmakelib)
+add_test(NAME main COMMAND $<TARGET_FILE:main>)
+
+find_package(math)
+target_link_libraries(main PRIVATE ${MATH_LIBRARY})
+
+find_package(Lua OPTIONAL_COMPONENTS lua luac)
+if(LUA_FOUND)
+  target_link_libraries(main PRIVATE lualib)
+endif()
+
+find_package(Readline COMPONENTS readline OPTIONAL_COMPONENTS history)
+if(Readline_FOUND)
+  target_link_libraries(main PRIVATE Readline::readline)
+endif()
+
+add_clang_format(cmake-format src/lib.c src/lib.h src/main.c)
+
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/src/lib.h DESTINATION include)
+include(CPack)
