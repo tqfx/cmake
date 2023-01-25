@@ -24,11 +24,10 @@
 include(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
 
 if(CMAKE_HOST_WIN32)
-  set(USER_HOME "$ENV{USERPROFILE}")
+  file(TO_CMAKE_PATH "$ENV{USERPROFILE}" USER_HOME)
 else()
-  set(USER_HOME "$ENV{HOME}")
+  file(TO_CMAKE_PATH "$ENV{HOME}" USER_HOME)
 endif()
-file(TO_CMAKE_PATH "${USER_HOME}" USER_HOME)
 
 if(NOT DEFINED CARGO_HOME)
   if("$ENV{CARGO_HOME}" STREQUAL "")
