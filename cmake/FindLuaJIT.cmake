@@ -48,7 +48,7 @@
 #
 # ``LUAJIT_LIBRARY``
 #
-# ``LUAJIT_MATH_LIBRARY``
+# ``LUA_MATH_LIBRARY``
 #
 # ``LUAJIT_EXECUTABLE``
 #
@@ -105,12 +105,12 @@ mark_as_advanced(LUAJIT_LIBRARY)
 if(EXISTS "${LUAJIT_LIBRARY}")
   list(APPEND LUAJIT_LIBRARIES ${LUAJIT_LIBRARY})
   if(UNIX AND NOT APPLE AND NOT BEOS)
-    find_library(LUAJIT_MATH_LIBRARY m)
-    mark_as_advanced(LUAJIT_MATH_LIBRARY)
-    if(NOT EXISTS "${LUAJIT_MATH_LIBRARY}")
+    find_library(LUA_MATH_LIBRARY m)
+    mark_as_advanced(LUA_MATH_LIBRARY)
+    if(NOT EXISTS "${LUA_MATH_LIBRARY}")
       list(APPEND LUAJIT_LIBRARIES m)
     else()
-      list(APPEND LUAJIT_LIBRARIES ${LUAJIT_MATH_LIBRARY})
+      list(APPEND LUAJIT_LIBRARIES ${LUA_MATH_LIBRARY})
     endif()
     get_filename_component(ext ${LUAJIT_LIBRARY} EXT)
     if(CMAKE_STATIC_LIBRARY_SUFFIX STREQUAL ext)
