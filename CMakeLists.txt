@@ -53,8 +53,11 @@ find_package(math)
 target_link_libraries(main PRIVATE ${MATH_LIBRARY})
 
 find_package(Lua OPTIONAL_COMPONENTS lua luac)
+find_package(LuaJIT OPTIONAL_COMPONENTS luajit)
 if(LUA_FOUND)
   target_link_libraries(main PRIVATE lualib)
+elseif(LUAJIT_FOUIND)
+  target_link_libraries(main PRIVATE luajit)
 endif()
 
 find_package(Readline COMPONENTS readline OPTIONAL_COMPONENTS history)
