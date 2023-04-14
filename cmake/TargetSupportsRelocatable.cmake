@@ -1,5 +1,5 @@
 function(TARGET_SUPPORTS_RELOCATABLE)
-  set(CMAKETMP ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp)
+  set(CMAKETMP ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp)
   get_cmake_property(ENABLED_LANGUAGES ENABLED_LANGUAGES)
   foreach(lang C ${ENABLED_LANGUAGES})
     if(CMAKE_${lang}_COMPILER)
@@ -10,11 +10,11 @@ function(TARGET_SUPPORTS_RELOCATABLE)
   if(NOT CMAKE_COMPILER)
     return()
   endif()
-  file(WRITE ${CMAKETMP}/object.c "\n")
-  execute_process(COMMAND ${CMAKE_COMPILER} -r object.c -o object.o
+  file(WRITE ${CMAKETMP}/object.c "")
+  execute_process(COMMAND ${CMAKE_COMPILER} -nostdlib -o object.o -r object.c
     WORKING_DIRECTORY ${CMAKETMP} ERROR_QUIET OUTPUT_QUIET RESULT_VARIABLE result
   )
-  file(REMOVE ${CMAKETMP}/object.c ${CMAKETMP}/object.o)
+  file(REMOVE_RECURSE ${CMAKETMP}/object.o ${CMAKETMP}/object.c)
   if(${result} EQUAL 0)
     set(TARGET_SUPPORTS_RELOCATABLE 1 CACHE INTERNAL "")
   else()
