@@ -30,7 +30,7 @@ find_package(JNI)
 find_package(Git)
 find_package(Zig)
 
-add_library(cmake OBJECT src/lib.c src/lib.h)
+add_library(cmake OBJECT src/lib.cc src/lib.h)
 add_library(cmakelib STATIC $<TARGET_OBJECTS:cmake>)
 add_library(libcmake SHARED $<TARGET_OBJECTS:cmake>)
 
@@ -68,7 +68,7 @@ if(Readline_FOUND)
   target_link_libraries(main PRIVATE Readline::readline)
 endif()
 
-add_clang_format(cmake-format src/lib.c src/lib.h src/main.c)
+add_clang_format(cmake-format src/lib.cc src/lib.h src/main.c)
 
 install(FILES ${CMAKE_CURRENT_LIST_DIR}/src/lib.h DESTINATION include)
 include(CPack)
