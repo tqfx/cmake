@@ -86,6 +86,9 @@ if(CMAKE_C_COMPILER_ID MATCHES "(ARM|Apple)?[Cc]lang" OR CMAKE_C_COMPILER_ID MAT
   # https://releases.llvm.org/4.0.1/tools/clang/DiagnosticsReference.html
   # https://clang.llvm.org/docs/DiagnosticsReference.html
   warnings_flag_cx(-Weverything)
+  if(MINGW)
+    warnings_flag_cx(-Wno-used-but-marked-unused)
+  endif()
   warnings_flag_cc(-Wno-declaration-after-statement)
   warnings_flag_xx(-Wno-c++98-compat-pedantic)
   warnings_flag_cx(-Wno-unsafe-buffer-usage)
@@ -156,8 +159,7 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC" OR CMAKE_CXX_COMPILER_ID MATCHES "MSVC
   endif()
 elseif(CMAKE_C_COMPILER_ID MATCHES "TinyCC")
   # https://bellard.org/tcc/tcc-doc.html
-  warnings_flag_cc(-Wall -Wunsupported)
-  warnings_flag_cc(-Wwrite-strings)
+  warnings_flag_cc(-Wall -Wwrite-strings)
 endif()
 
 function(target_compile_warnings)
