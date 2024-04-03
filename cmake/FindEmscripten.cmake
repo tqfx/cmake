@@ -1,6 +1,4 @@
 include(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
-find_program(NODE_JS_EXECUTABLE NAMES nodejs node HINTS ENV EMSDK_NODE)
-mark_as_advanced(NODE_JS_EXECUTABLE)
 find_program(EMSDK_EXECUTABLE NAMES emsdk HINTS ENV EMSDK)
 mark_as_advanced(EMSDK_EXECUTABLE)
 
@@ -28,8 +26,8 @@ mark_as_advanced(EMRANLIB_EXECUTABLE)
 
 if(EXISTS "${EMCC_EXECUTABLE}")
   execute_process(COMMAND ${EMCC_EXECUTABLE} -v ERROR_VARIABLE EMSCRIPTEN_VERSION OUTPUT_QUIET)
-  string(REGEX REPLACE ".+clang[^0-9]+([^ ]+).*" "\\1" EMSDK_COMPILER_VERSION "${EMSCRIPTEN_VERSION}")
-  string(REGEX REPLACE "emcc \\(.*\\) ([^ ]+).*" "\\1" EMSCRIPTEN_VERSION "${EMSCRIPTEN_VERSION}")
+  string(REGEX REPLACE ".+clang[^0-9]+([^\n ]+).*" "\\1" EMSDK_COMPILER_VERSION "${EMSCRIPTEN_VERSION}")
+  string(REGEX REPLACE "emcc \\(.*\\) ([^\n ]+).*" "\\1" EMSCRIPTEN_VERSION "${EMSCRIPTEN_VERSION}")
 endif()
 
 find_program(EM_CONFIG_EXECUTABLE NAMES em-config${EMCC_SUFFIX} HINTS ${EMSDK}/upstream/emscripten)
@@ -40,7 +38,18 @@ if(EXISTS "${EM_CONFIG_EXECUTABLE}")
   )
   file(TO_CMAKE_PATH "${EMSCRIPTEN_SYSROOT}" EMSCRIPTEN_SYSROOT)
   set(EMSCRIPTEN_SYSROOT "${EMSCRIPTEN_SYSROOT}/sysroot")
+  execute_process(COMMAND ${EM_CONFIG_EXECUTABLE} NODE_JS
+    OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NODE_JS
+  )
+  string(REGEX REPLACE ".+'([^']+)'.+" "\\1" NODE_JS "${NODE_JS}")
+  if(EXISTS "${NODE_JS}")
+    set(NODE_JS_EXECUTABLE ${NODE_JS} CACHE FILEPATH "Path to a program.")
+  endif()
+  set(NODE_JS)
 endif()
+
+find_program(NODE_JS_EXECUTABLE NAMES nodejs node HINTS ENV EMSDK_NODE)
+mark_as_advanced(NODE_JS_EXECUTABLE)
 
 find_package_handle_standard_args(Emscripten
   FOUND_VAR
