@@ -63,12 +63,8 @@ macro(sanitize_flag_ld)
 endmacro()
 
 if(
-  CMAKE_C_COMPILER_ID MATCHES "(Apple)?[Cc]lang" OR
-  CMAKE_C_COMPILER_ID MATCHES "IntelLLVM" OR
-  CMAKE_C_COMPILER_ID MATCHES "GNU" OR
-  CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?[Cc]lang" OR
-  CMAKE_CXX_COMPILER_ID MATCHES "IntelLLVM" OR
-  CMAKE_CXX_COMPILER_ID MATCHES "GNU"
+  CMAKE_C_COMPILER_ID MATCHES "GNU|.*[Cc]lang|.*LLVM" OR
+  CMAKE_CXX_COMPILER_ID MATCHES "GNU|.*[Cc]lang|.*LLVM"
 )
   set(REQUIRED_FLAGS -fsanitize=address)
   sanitize_flag_cx(-fsanitize=address)
@@ -107,6 +103,15 @@ function(target_compile_sanitize)
 endfunction()
 
 function(target_link_sanitize_3_13)
+  function(string_append var)
+    foreach(arg ${ARGN})
+      string(FIND "${${var}}" "${arg}" index)
+      if(${index} EQUAL -1)
+        string(STRIP "${${var}} ${arg}" ${var})
+      endif()
+    endforeach()
+    set(${var} "${${var}}" PARENT_SCOPE)
+  endfunction()
   foreach(target ${ARGN})
     if(TARGET ${target})
       get_property(LINK_FLAGS TARGET ${target} PROPERTY LINK_FLAGS)
