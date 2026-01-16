@@ -1,7 +1,7 @@
 include(cmake/CMakeModulePath.cmake)
 set(CMAKE_POLICY_DEFAULT_CMP0048 NEW)
 set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 2.8.12...4.0)
 include(cmake/Languages.cmake)
 project(cmake ${LANGUAGES})
 include(cmake/Project.cmake)
